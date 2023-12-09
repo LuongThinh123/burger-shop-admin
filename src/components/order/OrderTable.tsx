@@ -60,14 +60,14 @@ export const OrderTable: React.FC = () => {
   // };
 
   const handlePageChange = async (page) => {
-    // dispatch(
-    //   CategoryThunks.search({
-    //     categoryFilter: {
-    //       ...filter,
-    //       page,
-    //     },
-    //   })
-    // );
+    dispatch(
+      OrderThunks.search({
+        orderFilter: {
+          ...filter,
+          page,
+        },
+      })
+    );
   };
 
   const getTotalPrice = (order: Order): string => {
@@ -80,15 +80,15 @@ export const OrderTable: React.FC = () => {
   };
 
   const handlePageSizeChange = (pageSize) => {
-    // dispatch(
-    //   CategoryThunks.search({
-    //     categoryFilter: {
-    //       ...filter,
-    //       pageSize,
-    //       page: 1,
-    //     },
-    //   })
-    // );
+    dispatch(
+      OrderThunks.search({
+        orderFilter: {
+          ...filter,
+          pageSize,
+          page: 1,
+        },
+      })
+    );
   };
 
   return (
