@@ -13,6 +13,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { getDatesThisWeekDates, getTimeThisWeekDates, listMonths } from "@utils/DateUtil";
 import { useAppDispatch, useAppSelector } from "@store";
 import { useEffect, useRef, useState } from "react";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 
 import { Bar } from "react-chartjs-2";
 import { ButtonCustom } from "@components/_common/ButtonCustom";
@@ -26,6 +27,8 @@ import { TextFieldCustom } from "@components/_common/TextFieldCustom";
 import _ from "lodash";
 import { log } from "console";
 import moment from "moment";
+import pdfConverter from "jspdf";
+import html2canvas from "html2canvas";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 type Result = {
@@ -135,6 +138,31 @@ export const StatisticTable: React.FC = () => {
         break;
     }
     setValue(newValue);
+  };
+
+  const exportPDF = () => {
+    let input = window.document.getElementsByClassName("exportPDFF")[0] as HTMLCanvasElement;
+    var ctx = input.getContext("2d");
+    if (ctx !== null) {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, 0, 0);
+    }
+    html2canvas(input).then((canvas) => {
+      var ctx = canvas.getContext("2d");
+      if (ctx !== null) {
+        ctx.fillRect(0, 0, 0, 0);
+        const img = canvas.toDataURL("image/jpeg");
+        const pdf = new pdfConverter("l", "mm", "a4");
+        let width = pdf.internal.pageSize.getWidth();
+        let height = pdf.internal.pageSize.getHeight();
+        // console.log(input.offsetLeft, input.offsetTop, input.clientHeight, input.clientWidth, img);
+
+        pdf.addImage(canvas, "jpeg", 0, 0, width, height);
+        pdf.save("chart.pdf");
+      }
+
+      // but.style.display = "block";
+    });
   };
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -590,7 +618,7 @@ export const StatisticTable: React.FC = () => {
             }}
           />
         </TabPanel>
-        <TabPanel value="6">
+        <TabPanel value="6" className="exportPDF">
           <Stack
             direction={"row"}
             justifyContent="center"
@@ -627,30 +655,56 @@ export const StatisticTable: React.FC = () => {
                     alignItems: "center",
                     justifyContent: "space-between",
                     paddingTop: 1,
+                    gap: 1,
                   }}
                 >
-                  <Stack gap={2} flexDirection={"row"}>
-                    <ButtonCustom
-                      type="reset"
-                      variant="outlined"
-                      title={"Đặt lại"}
-                      startIcon={<ReplayIcon />}
-                    />
-                  </Stack>
-                  <Stack gap={2} flexDirection={"row"}>
-                    <ButtonCustom type="submit" title={"Tìm kiếm"} startIcon={<SearchIcon />} />
-                  </Stack>
+                  <Box>
+                    <Stack gap={2} flexDirection={"row"}>
+                      <ButtonCustom
+                        type="reset"
+                        variant="outlined"
+                        title={"Đặt lại"}
+                        startIcon={<ReplayIcon />}
+                      />
+                    </Stack>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                      gap: 5,
+                    }}
+                  >
+                    <Stack gap={2} flexDirection={"row"}>
+                      <ButtonCustom type="submit" title={"Tìm kiếm"} startIcon={<SearchIcon />} />
+                    </Stack>
+                    <Stack gap={2} flexDirection={"row"}>
+                      <ButtonCustom
+                        onClick={exportPDF}
+                        variant="outlined"
+                        title={"Xuất PDF"}
+                        startIcon={<PictureAsPdfIcon />}
+                      />
+                    </Stack>
+                  </Box>
                 </Box>
               </CardCustom>
             </Stack>
           </Stack>
 
           <Bar
+            className="exportPDFF"
             options={{
               responsive: true,
+              // maintainAspectRatio: false,
             }}
             data={{
               labels: listDates as any,
+
               datasets: [
                 {
                   label: "Số tiền",
