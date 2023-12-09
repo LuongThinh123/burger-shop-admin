@@ -192,21 +192,23 @@ export const StatisticTable: React.FC = () => {
               tempTotalProduct = 0;
 
             orders.forEach((order) => {
-              const dateTime = new Date(order.createdAt);
-              const date = dateTime.getDate();
-              const weekDay = dateTime.getDay();
-              // console.log("Date ne", date);
-              console.log(dateTime);
+              if (order.status == "COMPLETED") {
+                const dateTime = new Date(order.createdAt);
+                const date = dateTime.getDate();
+                const weekDay = dateTime.getDay();
+                // console.log("Date ne", date);
+                console.log(dateTime);
 
-              if (date == dates[i]) {
-                order.billDetails.forEach((billDetail) => {
-                  tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
-                  tempTotalProduct += billDetail.amount;
-                });
-                // result.amountProductEach.push(order.billDetails.length);
-                // result.totalMoneyEach.push(tempTotalMoney);
-                result.amountProductEach[weekDay] = tempTotalProduct;
-                result.totalMoneyEach[weekDay] = tempTotalMoney;
+                if (date == dates[i]) {
+                  order.billDetails.forEach((billDetail) => {
+                    tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
+                    tempTotalProduct += billDetail.amount;
+                  });
+                  // result.amountProductEach.push(order.billDetails.length);
+                  // result.totalMoneyEach.push(tempTotalMoney);
+                  result.amountProductEach[weekDay] = tempTotalProduct;
+                  result.totalMoneyEach[weekDay] = tempTotalMoney;
+                }
               }
             });
           }
@@ -224,18 +226,20 @@ export const StatisticTable: React.FC = () => {
             let tempTotalMoney = 0,
               tempTotalProduct = 0;
             orders.forEach((order) => {
-              const dateTime = new Date(order.createdAt);
-              const month = dateTime.getMonth() + 1;
+              if (order.status == "COMPLETED") {
+                const dateTime = new Date(order.createdAt);
+                const month = dateTime.getMonth() + 1;
 
-              if (month == i) {
-                order.billDetails.forEach((billDetail) => {
-                  tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
-                  tempTotalProduct += billDetail.amount;
-                });
-                console.log(tempTotalProduct);
+                if (month == i) {
+                  order.billDetails.forEach((billDetail) => {
+                    tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
+                    tempTotalProduct += billDetail.amount;
+                  });
+                  console.log(tempTotalProduct);
 
-                result.amountProductEach[month - 1] = tempTotalProduct;
-                result.totalMoneyEach[month - 1] = tempTotalMoney;
+                  result.amountProductEach[month - 1] = tempTotalProduct;
+                  result.totalMoneyEach[month - 1] = tempTotalMoney;
+                }
               }
             });
           }
@@ -252,17 +256,24 @@ export const StatisticTable: React.FC = () => {
           let listClient: Set<string> = new Set();
 
           orders.forEach((order) => {
-            // console.log(order.user);
+            console.log(order);
             if (order.user) {
               listClient.add(order.user.fullName);
             }
           });
           let index = 0;
+          console.log(listClient);
+
           listClient.forEach((user) => {
             let tempTotalMoney = 0,
               tempAmountProduct = 0;
             orders.forEach((order) => {
-              if (order.employee && order.user && order.user.fullName == user) {
+              if (
+                order.employee &&
+                order.user &&
+                order.user.fullName == user &&
+                order.status == "COMPLETED"
+              ) {
                 order.billDetails.forEach((billDetail) => {
                   tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
                   tempAmountProduct += billDetail.amount;
@@ -311,7 +322,11 @@ export const StatisticTable: React.FC = () => {
             let tempTotalMoney = 0,
               tempAmountProduct = 0;
             orders.forEach((order) => {
-              if (order.employee && order.employee.fullName == employee) {
+              if (
+                order.employee &&
+                order.employee.fullName == employee &&
+                order.status == "COMPLETED"
+              ) {
                 order.billDetails.forEach((billDetail) => {
                   console.log(billDetail);
 
@@ -355,23 +370,27 @@ export const StatisticTable: React.FC = () => {
 
           let listProduct: Set<string> = new Set();
           orders.forEach((order) => {
-            order.billDetails.forEach((billDetail) => {
-              listProduct.add(billDetail.product.name);
-            });
+            if (order.status == "COMPLETED") {
+              order.billDetails.forEach((billDetail) => {
+                listProduct.add(billDetail.product.name);
+              });
+            }
           });
           let index = 0;
           listProduct.forEach((product) => {
             let tempTotalMoney = 0,
               tempAmountProduct = 0;
             orders.forEach((order) => {
-              order.billDetails.forEach((billDetail) => {
-                if (billDetail.product.name === product) {
-                  tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
-                  tempAmountProduct += billDetail.amount;
-                }
-              });
-              result.amountProductEach[index] = tempAmountProduct;
-              result.totalMoneyEach[index] = tempTotalMoney;
+              if (order.status == "COMPLETED") {
+                order.billDetails.forEach((billDetail) => {
+                  if (billDetail.product.name === product) {
+                    tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
+                    tempAmountProduct += billDetail.amount;
+                  }
+                });
+                result.amountProductEach[index] = tempAmountProduct;
+                result.totalMoneyEach[index] = tempTotalMoney;
+              }
             });
             index++;
           });
@@ -403,23 +422,27 @@ export const StatisticTable: React.FC = () => {
 
           let listProduct: Set<string> = new Set();
           orders.forEach((order) => {
-            order.billDetails.forEach((billDetail) => {
-              listProduct.add(billDetail.product.name);
-            });
+            if (order.status == "COMPLETED") {
+              order.billDetails.forEach((billDetail) => {
+                listProduct.add(billDetail.product.name);
+              });
+            }
           });
           let index = 0;
           listProduct.forEach((product) => {
             let tempTotalMoney = 0,
               tempAmountProduct = 0;
             orders.forEach((order) => {
-              order.billDetails.forEach((billDetail) => {
-                if (billDetail.product.name === product) {
-                  tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
-                  tempAmountProduct += billDetail.amount;
-                }
-              });
-              result.amountProductEach[index] = tempAmountProduct;
-              result.totalMoneyEach[index] = tempTotalMoney;
+              if (order.status == "COMPLETED") {
+                order.billDetails.forEach((billDetail) => {
+                  if (billDetail.product.name === product) {
+                    tempTotalMoney += billDetail.amount * billDetail.priceSaleBill;
+                    tempAmountProduct += billDetail.amount;
+                  }
+                });
+                result.amountProductEach[index] = tempAmountProduct;
+                result.totalMoneyEach[index] = tempTotalMoney;
+              }
             });
             index++;
           });
@@ -473,17 +496,19 @@ export const StatisticTable: React.FC = () => {
         let amount = 0;
         let totalMoney = 0;
         orders.forEach((order) => {
-          let dateOrder = new Date(order.createdAt);
-          let month = dateOrder.getMonth();
-          let date = dateOrder.getDate();
-          let year = dateOrder.getFullYear();
-          let dateOrderFull = `${date}/${month}/${year}`;
+          if (order.status == "COMPLETED") {
+            let dateOrder = new Date(order.createdAt);
+            let month = dateOrder.getMonth();
+            let date = dateOrder.getDate();
+            let year = dateOrder.getFullYear();
+            let dateOrderFull = `${date}/${month}/${year}`;
 
-          if (dateOrderFull == col) {
-            order.billDetails.forEach((billDetail) => {
-              amount += billDetail.amount;
-              totalMoney += billDetail.amount * billDetail.priceSaleBill;
-            });
+            if (dateOrderFull == col) {
+              order.billDetails.forEach((billDetail) => {
+                amount += billDetail.amount;
+                totalMoney += billDetail.amount * billDetail.priceSaleBill;
+              });
+            }
           }
         });
         result.amountProductEach.push(amount);
